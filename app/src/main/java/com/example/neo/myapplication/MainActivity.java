@@ -2,6 +2,7 @@ package com.example.neo.myapplication;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -12,29 +13,49 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import javax.xml.transform.Result;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private JSONObject input;
+    public JSONObject retAPI;
+    private TextView mTxtDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // jsObjRequest.getBody().toString();
+        //ImageView mImageView;
+        mTxtDisplay = (TextView) findViewById(R.id.txtDisplay);
+        String iurl = "https://linux-statt-windows.org/api";
 
-        ImageView mImageView;
-        //mTxtDisplay = (TextView) findViewById(R.id.txtDisplay);
-        String url = "https://linux-statt-windows.org/api";
+        input = getAPI(iurl);
+        //editJSON(mTxtDisplay, input);
+    }
 
+    public JSONObject getAPI(String url){
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        TextView mTxtDisplay = (TextView) findViewById(R.id.txtDisplay);
-                        mTxtDisplay.setText("Response: " + response.toString());
+                        retAPI = response;
+
+                        Boolean logged = false;
+                        try {
+                            logged = retAPI.getBoolean("loggedIn");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        String loggedIn = logged ? "eingeloggt" : "ausgeloggt";
+                        mTxtDisplay.setText(loggedIn);
+                        Log.d("[JSONELEMENT]", String.valueOf(logged));
                     }
 
                 }, new Response.ErrorListener() {
@@ -47,7 +68,7 @@ public class MainActivity extends ActionBarActivity {
                 });
 
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
-
+        return retAPI;
     }
 
     @Override
@@ -70,5 +91,18 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void editJSON(TextView txtDisplay, JSONObject jsonIn){
+        Boolean logged = false;
+        try {
+            logged = jsonIn.getBoolean("loggedIn");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String loggedIn = logged ? "eingeloggt" : "ausgeloggt";
+        txtDisplay.setText(loggedIn);
+        Log.d("[JSONELEMENT]", String.valueOf(logged));
     }
 }
