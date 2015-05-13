@@ -1,7 +1,7 @@
 package com.example.neo.myapplication;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private TextView mTxtDisplay;
     private ListView catList;
@@ -93,8 +93,7 @@ public class MainActivity extends ActionBarActivity {
 
         try {
             JSONArray jsonCatList = jsonIn.getJSONArray("categories");
-
-            ArrayAdapter arrA = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+            ArrayAdapter<String> arrA = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
 
             for (int i = 0; i < jsonCatList.length(); i++) {
                 arrA.add(
