@@ -1,11 +1,12 @@
 package com.example.neo.myapplication;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -13,49 +14,35 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.xml.transform.Result;
-
-
 public class MainActivity extends ActionBarActivity {
 
-    private JSONObject input;
-    public JSONObject retAPI;
     private TextView mTxtDisplay;
+    private ListView catList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //ImageView mImageView;
         mTxtDisplay = (TextView) findViewById(R.id.txtDisplay);
         String iurl = "https://linux-statt-windows.org/api";
 
-        input = getAPI(iurl);
-        //editJSON(mTxtDisplay, input);
+        getAPI(iurl);
+
+        catList = (ListView) findViewById(R.id.categoryListView);
     }
 
-    public JSONObject getAPI(String url){
+    public void getAPI(String url) {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        retAPI = response;
-
-                        Boolean logged = false;
-                        try {
-                            logged = retAPI.getBoolean("loggedIn");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        String loggedIn = logged ? "eingeloggt" : "ausgeloggt";
-                        mTxtDisplay.setText(loggedIn);
-                        Log.d("[JSONELEMENT]", String.valueOf(logged));
+                        editJSON(mTxtDisplay, response);
                     }
 
                 }, new Response.ErrorListener() {
@@ -68,7 +55,6 @@ public class MainActivity extends ActionBarActivity {
                 });
 
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
-        return retAPI;
     }
 
     @Override
@@ -93,7 +79,7 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void editJSON(TextView txtDisplay, JSONObject jsonIn){
+    private void editJSON(TextView txtDisplay, JSONObject jsonIn) {
         Boolean logged = false;
         try {
             logged = jsonIn.getBoolean("loggedIn");
@@ -104,5 +90,22 @@ public class MainActivity extends ActionBarActivity {
         String loggedIn = logged ? "eingeloggt" : "ausgeloggt";
         txtDisplay.setText(loggedIn);
         Log.d("[JSONELEMENT]", String.valueOf(logged));
+
+        try {
+            JSONArray jsonCatList = jsonIn.getJSONArray("categories");
+
+            ArrayAdapter arrA = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+
+            for (int i = 0; i < jsonCatList.length(); i++) {
+                arrA.add(
+                        ((JSONObject) jsonCatList.get(i)).getString("name").replace("&amp;", "&")
+                );
+            }
+
+            catList.setAdapter(arrA);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 }
