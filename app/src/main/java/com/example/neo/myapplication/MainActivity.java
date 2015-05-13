@@ -13,8 +13,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
-import org.json.*;
-
 
 
 public class MainActivity extends ActionBarActivity {
@@ -23,31 +21,34 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // jsObjRequest.getBody().toString();
+
+        ImageView mImageView;
+        //mTxtDisplay = (TextView) findViewById(R.id.txtDisplay);
+        String url = "https://linux-statt-windows.org/api";
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        TextView mTxtDisplay = (TextView) findViewById(R.id.txtDisplay);
+                        mTxtDisplay.setText("Response: " + response.toString());
+                    }
+
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+
+                    }
+                });
+
+        MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+
     }
-
-    TextView mTxtDisplay = (TextView) findViewById(R.id.txtDisplay);
-    ImageView mImageView;
-    //mTxtDisplay = (TextView) findViewById(R.id.txtDisplay);
-    String url = "https://linux-statt-windows.org/api";
-
-    JsonObjectRequest jsObjRequest = new JsonObjectRequest
-            (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                @Override
-                public void onResponse(JSONObject response) {
-                    mTxtDisplay.setText("Response: " + response.toString());
-                }
-            }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    // TODO Auto-generated method stub
-
-                }
-            });
-
-// Access the RequestQueue through your singleton class.
-    //MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
