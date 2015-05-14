@@ -1,10 +1,16 @@
 package com.example.neo.myapplication;
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,41 +26,70 @@ import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView mTxtDisplay;
-    private ListView catList;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private LsWFragment rFragment = new LsWFragment();
+    private long mBackPressed;
+    private static final int TIME_INTERVAL = 1000;
+
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.navigation_drawer);
 
-        mTxtDisplay = (TextView) findViewById(R.id.txtDisplay);
-        String iurl = "https://linux-statt-windows.org/api";
+        /* Configure and initialize menu */
 
-        getAPI(iurl);
+        actionBar = getSupportActionBar();
 
-        catList = (ListView) findViewById(R.id.categoryListView);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.drawer_list);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+
+        reloadPageFragment(0);
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                getBaseContext(),
+                R.layout.drawer_list_item,
+                getResources().getStringArray(R.array.menu)
+        );
+        mDrawerList.setAdapter(adapter);
+
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        // Menu-action - selecting a category
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String[] menu = getResources().getStringArray(R.array.menu);
+                String mTitle = menu[position];
+                actionBar.setTitle(mTitle);
+                mDrawerLayout.closeDrawer(mDrawerList);
+            }
+        });
     }
 
-    public void getAPI(String url) {
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+    private void reloadPageFragment(int pos) {
+        String[] menu = getResources().getStringArray(R.array.menu);
+        String mTitle = menu[pos];
+        actionBar.setTitle(mTitle);
 
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        editJSON(mTxtDisplay, response);
-                    }
+        Bundle data = new Bundle();
+        data.putInt("position", pos);
+        rFragment.setArguments(data);
 
-                }, new Response.ErrorListener() {
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
-
-        MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+        ft.replace(R.id.content_frame, rFragment);
+        ft.commit();
     }
 
     @Override
@@ -77,34 +112,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void editJSON(TextView txtDisplay, JSONObject jsonIn) {
-        Boolean logged = false;
-        try {
-            logged = jsonIn.getBoolean("loggedIn");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String loggedIn = logged ? "eingeloggt" : "ausgeloggt";
-        txtDisplay.setText(loggedIn);
-        Log.d("[JSONELEMENT]", String.valueOf(logged));
-
-        try {
-            JSONArray jsonCatList = jsonIn.getJSONArray("categories");
-            ArrayAdapter<String> arrA = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-
-            for (int i = 0; i < jsonCatList.length(); i++) {
-                arrA.add(
-                        ((JSONObject) jsonCatList.get(i)).getString("name").replace("&amp;", "&")
-                );
-            }
-
-            catList.setAdapter(arrA);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
     }
 }
