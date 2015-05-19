@@ -1,4 +1,4 @@
-package com.example.neo.myapplication;
+package io.lsw.dev.linuxstattwindowsnative;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -6,23 +6,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        MySingleton.getInstance(this).getRequestQueue().stop();
     }
 
     private void reloadPageFragment(int pos) {

@@ -5,18 +5,17 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/txtDisplay"
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <ListView
+        android:id="@+id/loading_cats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/loading_cats" />
+
+    <ListView
         android:id="@+id/categoryListView"
-        android:layout_below="@+id/txtDisplay"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible" />
 </LinearLayout>

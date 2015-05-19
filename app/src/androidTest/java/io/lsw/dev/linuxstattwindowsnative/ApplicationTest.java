@@ -1,4 +1,4 @@
-package com.example.neo.myapplication;
+package io.lsw.dev.linuxstattwindowsnative;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

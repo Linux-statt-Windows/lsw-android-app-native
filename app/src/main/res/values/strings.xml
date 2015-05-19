@@ -1,10 +1,20 @@
 <resources>
     <string name="app_name">LsW Board</string>
-
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Einstellungen</string>
+    <string name="loading_cats">Lade Kategorien …</string>
 
     <string name="choose_cat">Wähle eine Kategorie aus</string>
+
+    <string name="drawer_open">Navigation öffnen</string>
+    <string name="drawer_close">Navigation schließen</string>
+
+    <string name="is_logged_in">Angemeldet</string>
+    <string name="is_logged_out">Abgemeldet</string>
+
+    <string name="username">Benutzername</string>
+    <string name="password">Passwort</string>
+    <string name="login_do">Anmelden</string>
+    <string name="cancel_do">Abbrechen</string>
 
     <string-array name="menu">
         <item>Home</item>
@@ -19,6 +29,4 @@
         <!--<item>Neues Design</item>-->
     </string-array>
 
-    <string name="drawer_open">Navigation öffnen</string>
-    <string name="drawer_close">Navigation schließen</string>
 </resources>

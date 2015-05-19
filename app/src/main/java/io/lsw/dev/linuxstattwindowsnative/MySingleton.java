@@ -1,4 +1,4 @@
-package com.example.neo.myapplication;
+package io.lsw.dev.linuxstattwindowsnative;
 
 import android.content.Context;
 import android.graphics.Bitmap;
