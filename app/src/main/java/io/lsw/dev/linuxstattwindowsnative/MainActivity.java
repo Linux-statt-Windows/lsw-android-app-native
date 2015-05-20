@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String[] menu = getResources().getStringArray(R.array.menu);
                 String mTitle = menu[position];
+                rFragment.loadCategory(position);
                 actionBar.setTitle(mTitle);
                 mDrawerLayout.closeDrawer(mDrawerList);
             }

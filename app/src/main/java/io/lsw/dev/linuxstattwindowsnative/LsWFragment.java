@@ -30,13 +30,13 @@ public class LsWFragment extends Fragment {
     private ArrayList<String> categoryList;
 
     private Context parentContext;
+    private String mainSite = "https://linux-statt-windows.org/api";
+    private String[] categories = {};
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if(container == null)
             return null;
-
-        String iurl = "https://linux-statt-windows.org/api";
 
         View v = inflater.inflate(R.layout.fragment_layout, container, false);
         mTxtDisplay = (TextView) v.findViewById(R.id.loading_cats);
@@ -57,18 +57,18 @@ public class LsWFragment extends Fragment {
         }
 
         // Starting Request-Queue for Data-input
-        getAPI(iurl);
+        getAPI(mainSite, "categories", "name");
 
         return v;
     }
 
-    public void getAPI(String url) {
+    public void getAPI(String url, final String loadObject, final String titleName) {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        editJSON(mTxtDisplay, response);
+                        editJSON(mTxtDisplay, response, loadObject, titleName);
                     }
 
                 }, new Response.ErrorListener() {
@@ -76,7 +76,6 @@ public class LsWFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO Auto-generated method stub
-
                     }
                 });
 
@@ -87,7 +86,7 @@ public class LsWFragment extends Fragment {
         }
     }
 
-    private void editJSON(TextView loadingTextView, JSONObject jsonIn) {
+    private void editJSON(TextView loadingTextView, JSONObject jsonIn, String loadObject, String titleName) {
         Boolean logged = false;
         try {
             logged = jsonIn.getBoolean("loggedIn");
@@ -96,14 +95,14 @@ public class LsWFragment extends Fragment {
         }
 
         Integer loggedIn = logged ? R.string.is_logged_in : R.string.is_logged_out;
-        Log.d("[JSONELEMENT]", String.valueOf(logged));
+        Log.d("[LOGGEDIN]", String.valueOf(logged));
 
         try {
-            JSONArray jsonCatList = jsonIn.getJSONArray("categories");
-
+            JSONArray jsonCatList = jsonIn.getJSONArray(loadObject);
+            categoryList.clear();
             for (int i = 0; i < jsonCatList.length(); i++) {
                 categoryList.add(
-                        ((JSONObject) jsonCatList.get(i)).getString("name").replace("&amp;", "&")
+                        ((JSONObject) jsonCatList.get(i)).getString(titleName).replace("&amp;", "&")
                 );
             }
 
@@ -118,6 +117,35 @@ public class LsWFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
 
+    public void loadCategory(int position){
+        Log.d("[CATEGORY]", String.valueOf(position));
+        switch (position){
+            case 0:
+                getAPI(mainSite, "categories", "name");
+                break;
+            case 1:
+                getAPI(mainSite + "/unread", "topics", "title");
+                break;
+            case 2:
+                getAPI(mainSite + "/recent", "topics", "title");
+                break;
+            case 3:
+                getAPI(mainSite + "/tags", "tags", "value");
+                break;
+            case 4:
+                getAPI(mainSite + "/popular", "topics", "title");
+                break;
+            case 5:
+                getAPI(mainSite + "/users", "users", "username");
+                break;
+            case 6:
+                getAPI(mainSite + "/groups", "groups", "name");
+                break;
+            case 7:
+                getAPI(mainSite + "/notifications", "notifications", "notifications");
+                break;
+        }
     }
 }
