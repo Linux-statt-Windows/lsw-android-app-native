@@ -109,6 +109,7 @@ public class LsWFragment extends Fragment {
 
             // Removing "loading ..."
             loadingTextView.setVisibility(View.INVISIBLE);
+            loadingTextView.setHeight(0);
 
             // Adding the loaded list
             catList.setVisibility(View.VISIBLE);
