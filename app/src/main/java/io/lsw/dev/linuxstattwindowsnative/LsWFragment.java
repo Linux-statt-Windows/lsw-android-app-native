@@ -3,6 +3,9 @@ package io.lsw.dev.linuxstattwindowsnative;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LsWFragment extends Fragment {
 
@@ -28,6 +32,9 @@ public class LsWFragment extends Fragment {
     private ListView catList;
     private ArrayAdapter<String> categoryListAdapter;
     private ArrayList<String> categoryList;
+    private RecyclerView categoryRec;
+    private LinearLayoutManager layoutManager;
+    private List<Content> content;
 
     private Context parentContext;
     private String mainSite = "https://linux-statt-windows.org/api";
@@ -35,7 +42,7 @@ public class LsWFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if(container == null)
+        if (container == null)
             return null;
 
         View v = inflater.inflate(R.layout.fragment_layout, container, false);
@@ -56,10 +63,33 @@ public class LsWFragment extends Fragment {
             Log.w("[onCreateView]", "ParentContext == null");
         }
 
+        // Creating categoryRecyclerView
+        categoryRec = (RecyclerView) v.findViewById(R.id.categoryRecyclerView);
+        categoryRec.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(getActivity());
+        categoryRec.setLayoutManager(layoutManager);
+        categoryRec.setItemAnimator(new DefaultItemAnimator());
+
+        initializeData();
+        initializeAdapter();
+
         // Starting Request-Queue for Data-input
         getAPI(mainSite, "categories", "name");
 
         return v;
+    }
+
+    private void initializeData() {
+        content = new ArrayList<Content>();
+        content.add(new Content("Emma Wilson", "23 years old", R.drawable.ic_drawer));
+        content.add(new Content("Lavery Maiss", "25 years old", R.drawable.ic_drawer));
+        content.add(new Content("Lillie Watts", "35 years old", R.drawable.ic_drawer));
+    }
+
+    private void initializeAdapter() {
+        ContentAdapter adapter = new ContentAdapter(content);
+        categoryRec.setAdapter(adapter);
     }
 
     public void getAPI(String url, final String loadObject, final String titleName) {
@@ -112,16 +142,16 @@ public class LsWFragment extends Fragment {
 
             // Adding the loaded list
             catList.setVisibility(View.VISIBLE);
-
+            
             categoryListAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public void loadCategory(int position){
+    public void loadCategory(int position) {
         Log.d("[CATEGORY]", String.valueOf(position));
-        switch (position){
+        switch (position) {
             case 0:
                 getAPI(mainSite, "categories", "name");
                 break;
@@ -149,3 +179,5 @@ public class LsWFragment extends Fragment {
         }
     }
 }
+
+
